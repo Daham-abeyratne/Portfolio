@@ -207,7 +207,7 @@ const Portfolio = () => {
                     </div>
                   </div>
                   <div className='sm:text-justify text-left mt-8'>
-                    <p className='p-[8px]'>I am a passionate Data Science and AI student dedicated to leveraging machine learning and artificial intelligence to solve real world problems. With a strong foundation in mathematics and programming, I create intelligent systems that transform data into actionable insights.</p>
+                    <p className='p-[8px]'>I&apos;m a passionate Data Science and AI student dedicated to leveraging machine learning and artificial intelligence to solve real world problems. With a strong foundation in mathematics and programming, I create intelligent systems that transform data into actionable insights.</p>
                     <p className='p-[8px]'>My journey in AI has equipped me with expertise in deep learning, natural language processing, and computer vision. I thrive on building end to end solutions that bridge the gap between cutting edge research and practical applications.</p>
                     {/* <DecryptedText
                       text=""
