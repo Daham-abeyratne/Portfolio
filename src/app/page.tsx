@@ -4,6 +4,21 @@ import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Menu, X } from 'lucide
 import Name3D from '../../components/Name3D';
 import Image from "next/image";
 import { useTheme } from '../../context/ThemeContext';
+import GlassSurface from '../../components/GlassSurface';
+import LetterGlitch from '../../components/LetterGlitch';
+import { Playfair_Display } from 'next/font/google';
+import { useRouter } from "next/navigation";
+import DecryptedText from '../../components/DecryptedText';
+import Navbar from '../../components/Navbar';
+import DarkVeil from '@/components/DarkVeil';
+import { useSearchParams } from "next/navigation";
+
+
+
+  const playfair = Playfair_Display({
+    subsets: ['latin'],
+    weight: ['400', '700', '900'],
+  });
 
 const Portfolio = () => {
   type VisibilityState = {
@@ -12,11 +27,26 @@ const Portfolio = () => {
     contact : boolean;
   };
 
+
   const { darkMode } = useTheme(); // Correctly destructuring darkMode
   const [currentPage, setCurrentPage] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<VisibilityState>({hero:false,about:false,contact:false,});
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [showNavbar, setShowNavbar] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const section = searchParams.get("scroll");
+    if (!section) return;
+
+    const element = document.getElementById(section);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [searchParams]);
+
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -38,62 +68,32 @@ const Portfolio = () => {
     return () => observer.disconnect();
   }, [currentPage]);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setMobileMenuOpen(false);
-    }
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroSection = document.getElementById('hero');
+      if (heroSection) {
+        const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+        const scrollPosition = window.scrollY + window.innerHeight / 2;
+        setShowNavbar(scrollPosition > heroBottom);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // const scrollToSection = (sectionId: string) => {
+  //   const element = document.getElementById(sectionId);
+  //   if (element) {
+  //     element.scrollIntoView({ behavior: 'smooth' });
+  //     setMobileMenuOpen(false);
+  //   }
+  // };
 
   const skills = [
-    'Python', 'SQL', 'React', 'Next.js',
-    'Machine Learning','Pandas', 'NumPy','HTML','SymPy'
-  ];
-
-  const projects = [
-    {
-      name: 'AI Image Recognition System',
-      description: 'Built a CNN-based image classification system achieving 95% accuracy on custom dataset using TensorFlow and Keras.',
-      tech: ['Python', 'TensorFlow', 'OpenCV', 'Flask'],
-      github: 'https://github.com',
-      demo: 'https://demo.com'
-    },
-    {
-      name: 'Sentiment Analysis Dashboard',
-      description: 'Real-time sentiment analysis platform for social media data using NLP and interactive visualizations.',
-      tech: ['Python', 'NLTK', 'React', 'D3.js'],
-      github: 'https://github.com',
-      demo: null
-    },
-    {
-      name: 'Predictive Analytics Engine',
-      description: 'Machine learning pipeline for sales forecasting with automated feature engineering and model selection.',
-      tech: ['Python', 'Scikit-learn', 'Pandas', 'SQL'],
-      github: 'https://github.com',
-      demo: 'https://demo.com'
-    },
-    {
-      name: 'Chatbot with RAG',
-      description: 'Intelligent chatbot using Retrieval-Augmented Generation for domain-specific question answering.',
-      tech: ['Python', 'LangChain', 'OpenAI', 'Vector DB'],
-      github: 'https://github.com',
-      demo: null
-    },
-    {
-      name: 'Customer Churn Predictor',
-      description: 'End-to-end ML solution predicting customer churn with 87% accuracy and actionable insights dashboard.',
-      tech: ['Python', 'XGBoost', 'Streamlit', 'PostgreSQL'],
-      github: 'https://github.com',
-      demo: 'https://demo.com'
-    },
-    {
-      name: 'Time Series Forecaster',
-      description: 'LSTM-based forecasting system for multi-variate time series with uncertainty quantification.',
-      tech: ['Python', 'TensorFlow', 'Prophet', 'FastAPI'],
-      github: 'https://github.com',
-      demo: null
-    }
+    'Python', 'SQL', 'React', 'Next.js','Pandas', 'NumPy','HTML','SymPy','Java','JavaScript'
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -106,63 +106,130 @@ const Portfolio = () => {
     ? 'bg-gray-900 text-white'
     : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
 
+
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
-  const accentColor = darkMode ? 'text-blue-200' : 'text-blue-700';
+  const accentColor = darkMode ? "text-blue-700" : "text-blue-700";
   const buttonBg = darkMode ? 'bg-blue-600 hover:bg-blue-900' : 'bg-blue-600 hover:bg-blue-900';
+  const router = useRouter();
+  const {toggleDarkMode } = useTheme();
+
+  const goToProjects = () => {
+    setCurrentPage("projects");
+    setMobileMenuOpen(false);
+    router.push("/projects");
+  };
+
 
   return (
     <div className={`min-h-screen ${theme} transition-colors duration-300`}>
-      {/* Navbar - You should import your Navbar component here */}
-
-      <div className="pt-16">
+      {/* <nav id='navbar'>
+          <div className={`absolute text-2xl font-bold left-15 pt-10 ${accentColor} text-[30px]`}>Portfolio</div>
+          <button 
+                onClick={() => scrollToSection("about")}
+                className={`absolute right-45 top-10 hover:text-gray-600 transition ${darkMode  ? 'text-white' : 'text-black' } text-[20px]`}
+              >
+                About
+          </button>
+          <button
+                onClick={toggleDarkMode}
+                className={`p-2 rounded-lg absolute right-20 top-9.5 hover:text-gray-600 transition`}
+              >
+                {darkMode ? <Sun size={25} /> : <Moon size={25} />}
+          </button>
+      </nav> */}
+      <div>
           <>
-            <section id="hero" className="min-h-screen flex justify-center px-4" data-animate>
-              <div className={`max-w-4xl text-center transition-all duration-1000 ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <div className='h-[320px] lg:h-[400px] w-[99%] lg:w-[550px] lg:mt-10'>
-                  <div className="h-[350px] lg:h-[400px] w-[99%] lg:w-[550px] mt-0">
-                    <Name3D />
+            <section
+                id="hero"
+                className="min-h-screen  flex flex-col lg:flex-row items-center justify-center px-6 overflow-hidden pl-6 pr-6"
+                data-animate
+              >
+              <div className={`transition-all w-[100%] duration-1000 ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <div className='h-[300px] lg:h-[350px] w-full max-w-full lg:w-[550px] lg:mt-0 lg:hidden'>
+                  <div className="max-[900px]:h-[300px] w-full lg:w-[600px] overflow-hidden">
+                    <div className="h-[450px] sm:h-[550px] w-full lg:w-[550px] mt-0 lg:hidden">
+                      <Name3D />
+                    </div>
                   </div>
                 </div>
-                <p className={`text-1xl sm:text-xl md:text-3xl mb-4 font-semibold opacity-50 ${darkMode ? 'text-blue-400' : 'text-black'}`}>
+                <div className='h-[300px] lg:h-[350px] w-full max-w-full pl-8 max-[1200px]:pl-0 lg:mt-0 hidden lg:block '>
+                  <div className='leading-none text-[120px] font-bold text-blue-800 pt-10 mb-12 text-left max-[1100px]:z-[2] max-[1200px]:w-[100%] max-[1200px]:text-center'>
+                      <div className={playfair.className}>DAHAM</div>
+                      <div className={playfair.className}>ABEYRATNE</div>
+                  </div>
+                </div>
+                <p className={`text-1xl sm:text-xl max-[1200px]:pl-0 max-[1200px]:text-center md:text-xl pl-10 mb-4 font-semibold opacity-50 ${darkMode ? 'text-blue-400' : 'text-black'}`}>
                   Bsc(Hons) AI and Data Science
                 </p>
-                <p className={`text-lg sm:text-xl mb-12 ${darkMode ? 'text-white' : 'text-gray-600'} max-w-2xl mx-auto`}>
+                <p className={`text-lg sm:text-xl max-[1200px]:pl-0 max-[1200px]:text-center  md:text-2xl mb-12 z-1000 pl-10 ml-0 ${darkMode ? 'text-white' : 'text-gray-600'}`}>
                   Solving problems with data and intelligent systems
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex pl-10 max-[1200px]:pl-0 max-[1200px]:justify-center flex-col items-center lg:items-right lg:flex-row gap-4 w-[100%]">
                   <button
-                    onClick={() => setCurrentPage('projects')}
-                    className={`${buttonBg} text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg`}
+                    onClick={goToProjects}
+                    className={`${buttonBg} text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 max-[1030px]:w-[80%] shadow-lg z-1000`}
                   >
                     View Projects
                   </button>
                   <button
-                    onClick={() => scrollToSection('contact')}
-                    className={`${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-800 hover:bg-gray-700'} text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg`}
+                    onClick={() => router.push("/#contact")}
+                    className={`${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-800 hover:bg-gray-700'} text-white px-8 py-4 rounded-lg font-semibold max-[1030px]:w-[80%] text-lg transition-all duration-300 transform hover:scale-105 shadow-lg z-1000`}
                   >
                     Contact Me
                   </button>
                 </div>
               </div>
+              <div className={`w-[100%] flex justify-center transition-all duration-1000 ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'} hidden min-[1200px]:flex `}>
+                <div className="relative w-[75%] h-[350px] border-0 rounded-xl overflow-hidden transition-colors duration-300">
+                  <LetterGlitch
+                    glitchSpeed={70}
+                    centerVignette={false}
+                    outerVignette={true}
+                    smooth={true} 
+                    glitchColors={['#2b4539', '#61dca3', '#61b3dc']} 
+                    characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ'}          
+                  />
+                </div>
+              </div>
             </section>
-
-            <section id="about" className="py-20 px-4 pb-35" data-animate>
-              <div className={`max-w-6xl mx-auto transition-all duration-1000 delay-200 ${isVisible.about ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            {/* <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out ${showNavbar ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-20 pointer-events-none'}`}>
+              <Navbar />
+            </div> */}
+            <section id="about" className="py-20 px-4 pt-[100px] min-h-screen pb-[100px]" data-animate>
+              <div className={`max-w-7xl mx-auto transition-all duration-1000 delay-200 ${isVisible.about ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                 <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center">About Me</h2>
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                  <div className={`${cardBg} rounded-2xl p-8 shadow-xl`}>
-                    <div className="w-48 h-48 mx-auto mb-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-6xl font-bold text-white">
-                      <Image src="/dp.png" width={200} height={200} className="rounded-full object-cover border-1 border-0 shadow-lg" alt="Profile picture"/>
+                <div className="grid md:grid-cols-2 gap-10 items-center">
+                  <div className={`${darkMode? '':''} rounded-xl shadow-2xl`}>
+                    <div>
+                      <div className="w-75 h-75 mx-auto mb-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-6xl font-bold text-white">
+                        <img src={`${basePath}/dp.png`} width={300} height={300} className="rounded-full object-cover border-1 border-0 shadow-lg" alt="Profile picture"/>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <p className="lg:text-lg mb-6 leading-relaxed lg:text-justify text-left">
-                      I'm a passionate Data Science and AI student dedicated to leveraging machine learning and artificial intelligence to solve real-world problems. With a strong foundation in mathematics and programming, I create intelligent systems that transform data into actionable insights.
-                    </p>
-                    <p className="lg:text-lg mb-8 leading-relaxed lg:text-justify text-left">
-                      My journey in AI has equipped me with expertise in deep learning, natural language processing, and computer vision. I thrive on building end-to-end solutions that bridge the gap between cutting-edge research and practical applications.
-                    </p>
-                    <h3 className="text-2xl font-bold mb-4">Skills & Technologies</h3>
+                  <div className='sm:text-justify text-left mt-8'>
+                    <p className='p-[8px]'>I'm a passionate Data Science and AI student dedicated to leveraging machine learning and artificial intelligence to solve real world problems. With a strong foundation in mathematics and programming, I create intelligent systems that transform data into actionable insights.</p>
+                    <p className='p-[8px]'>My journey in AI has equipped me with expertise in deep learning, natural language processing, and computer vision. I thrive on building end to end solutions that bridge the gap between cutting edge research and practical applications.</p>
+                    {/* <DecryptedText
+                      text=""
+                      animateOn="view"
+                      revealDirection="start"
+                      repeatOnView={false}
+                      sequential={true}
+                      speed={5}
+                      className="lg:text-lg mb-8 leading-relaxed sm:text-justify text-left"
+                    />
+                    <div className='pt-4'>
+                      <DecryptedText
+                        text=""
+                        animateOn="view"
+                        revealDirection="start"
+                        repeatOnView={false}
+                        sequential={true}
+                        speed={8}
+                        className="lg:text-lg mb-8 leading-relaxed lg:text-justify text-left"
+                      />
+                    </div> */}
+                    <h3 className="text-2xl font-bold mb-6 mt-8">Skills & Technologies</h3>
                     <div className="flex flex-wrap gap-3">
                       {skills.map((skill, idx) => (
                         <span
@@ -177,12 +244,18 @@ const Portfolio = () => {
                 </div>
               </div>
             </section>
-
-            <section id="contact" className="py-20 px-4" data-animate>
-              <div className={`max-w-4xl mx-auto transition-all duration-1000 delay-300 ${isVisible.contact ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center">Get In Touch</h2>
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className={`${cardBg} rounded-2xl p-8 shadow-xl`}>
+            <div className='relative'>
+              <div className="w-full h-[900px] max-[900px]:h-[1300px] absolute overflow-hidden">
+                <div className='h-[950px] max-[900px]:h-[1300px] opacity-[50%]'>
+                  <DarkVeil />
+                </div>
+              </div>
+            </div>
+            <section id="contact" className="py-20 max-[900px]:px-0 max-[900px]:pl-[3%] max-[900px]:pr-[3%] px-4 pb-[85px] mt-[50px] pt-[100px]" data-animate>
+              <div className={`max-w-5xl mx-auto w-[100%] transition-all duration-1000 delay-300 mb-[45px] ${isVisible.contact ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <h2 className="text-4xl md:text-5xl font-bold mb-18 pt-[10px] text-center ">Get In Touch</h2>
+                <div className="grid md:grid-cols-2 place-items-center  min-[900px] max-[900px]:gap-10">
+                  <div className={`${cardBg} rounded-2xl p-8 shadow-2xl`}>
                     <h3 className="text-2xl font-bold mb-6">Send a Message</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <input
@@ -214,8 +287,8 @@ const Portfolio = () => {
                       </button>
                     </form>
                   </div>
-                  <div className={`${cardBg} rounded-2xl p-8 shadow-xl flex flex-col justify-center`}>
-                    <h3 className="text-2xl font-bold mb-6 pl-4 pb-4">Connect With Me</h3>
+                  <div className={`${cardBg} max-w-md  rounded-2xl p-8 min-[900px]:p-10px shadow-2xl flex flex-col justify-center`}>
+                    <h3 className="text-2xl font-bold mb-6 pl-2 pb-4 ">Connect With Me</h3>
                     <div className="space-y-4">
                       <a href="mailto:dahamabeyratney@gmail.com" className={`flex items-center space-x-4 p-4 rounded-lg ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition`}>
                         <Mail className={accentColor} size={24} />

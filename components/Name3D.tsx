@@ -16,12 +16,10 @@ function Model() {
 
   useEffect(() => {
     const updateScale = () => {
-      const isMobile = window.innerWidth < 768;
-      setScale(isMobile ? [17, 17, 18] : [20, 20, 15]);
+      setScale([12, 17, 18]);
     };
     const updatePosition = () => {
-      const isMobile = window.innerWidth < 768;
-      setPosition(isMobile ? [-0.1, -0.2, 0] : [-0.1, -0.5, 0]);
+      setPosition([-0.1, 0.1, 0]);
     };
 
     updateScale(); // initial check
@@ -47,7 +45,7 @@ export default function Name3D() {
       camera={{ position: [0, 0, 5], fov: 35 }}
     >
       <ambientLight intensity={2} />
-      <directionalLight position={[10, 80, 5]} intensity={5} />
+      <directionalLight position={[8, 80, 2]} intensity={85} />
       <Suspense fallback={null}>
         <Model />
       </Suspense>
