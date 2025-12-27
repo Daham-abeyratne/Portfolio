@@ -2,16 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Menu, X } from 'lucide-react';
 import Name3D from '../../components/Name3D';
-import Image from "next/image";
 import { useTheme } from '../../context/ThemeContext';
-import GlassSurface from '../../components/GlassSurface';
 import LetterGlitch from '../../components/LetterGlitch';
 import { Playfair_Display } from 'next/font/google';
 import { useRouter } from "next/navigation";
-import DecryptedText from '../../components/DecryptedText';
-import Navbar from '../../components/Navbar';
 import DarkVeil from '@/components/DarkVeil';
 import { useSearchParams } from "next/navigation";
+
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
