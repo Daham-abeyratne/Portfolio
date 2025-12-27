@@ -7,7 +7,8 @@ import LetterGlitch from '../../components/LetterGlitch';
 import { Playfair_Display } from 'next/font/google';
 import { useRouter } from "next/navigation";
 import DarkVeil from '@/components/DarkVeil';
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import SearchScrollHandler from '../../components/SearchScrollHandler';
 
 
 const playfair = Playfair_Display({
@@ -32,23 +33,6 @@ const Portfolio = () => {
 
   const router = useRouter();
   const { toggleDarkMode } = useTheme();
-
-  // CLIENT-SIDE ONLY: handle search params safely
-  const searchParams = useSearchParams();
-  const [clientReady, setClientReady] = useState(false);
-
-  useEffect(() => {
-    setClientReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!clientReady) return;
-    const section = searchParams.get("scroll");
-    if (!section) return;
-
-    const element = document.getElementById(section);
-    if (element) element.scrollIntoView({ behavior: "smooth" });
-  }, [clientReady, searchParams]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -113,6 +97,9 @@ const Portfolio = () => {
 
   return (
     <div className={`min-h-screen ${theme} transition-colors duration-300`}>
+      <Suspense fallback={null}>
+        <SearchScrollHandler />
+      </Suspense>
       {/* <nav id='navbar'>
           <div className={`absolute text-2xl font-bold left-15 pt-10 ${accentColor} text-[30px]`}>Portfolio</div>
           <button 
