@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Menu, X } from 'lucide-react';
 import Name3D from '../../components/Name3D';
@@ -13,12 +13,10 @@ import Navbar from '../../components/Navbar';
 import DarkVeil from '@/components/DarkVeil';
 import { useSearchParams } from "next/navigation";
 
-
-
-  const playfair = Playfair_Display({
-    subsets: ['latin'],
-    weight: ['400', '700', '900'],
-  });
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+});
 
 const Portfolio = () => {
   type VisibilityState = {
@@ -27,26 +25,33 @@ const Portfolio = () => {
     contact : boolean;
   };
 
-
   const { darkMode } = useTheme(); // Correctly destructuring darkMode
   const [currentPage, setCurrentPage] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<VisibilityState>({hero:false,about:false,contact:false,});
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [showNavbar, setShowNavbar] = useState(false);
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+  const router = useRouter();
+  const { toggleDarkMode } = useTheme();
+
+  // CLIENT-SIDE ONLY: handle search params safely
   const searchParams = useSearchParams();
+  const [clientReady, setClientReady] = useState(false);
 
   useEffect(() => {
+    setClientReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!clientReady) return;
     const section = searchParams.get("scroll");
     if (!section) return;
 
     const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [searchParams]);
-
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+    if (element) element.scrollIntoView({ behavior: "smooth" });
+  }, [clientReady, searchParams]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -79,18 +84,10 @@ const Portfolio = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial position
+    handleScroll(); // initial check
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // const scrollToSection = (sectionId: string) => {
-  //   const element = document.getElementById(sectionId);
-  //   if (element) {
-  //     element.scrollIntoView({ behavior: 'smooth' });
-  //     setMobileMenuOpen(false);
-  //   }
-  // };
 
   const skills = [
     'Python', 'SQL', 'React', 'Next.js','Pandas', 'NumPy','HTML','SymPy','Java','JavaScript'
@@ -106,12 +103,9 @@ const Portfolio = () => {
     ? 'bg-gray-900 text-white'
     : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
 
-
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
   const accentColor = darkMode ? "text-blue-700" : "text-blue-700";
   const buttonBg = darkMode ? 'bg-blue-600 hover:bg-blue-900' : 'bg-blue-600 hover:bg-blue-900';
-  const router = useRouter();
-  const {toggleDarkMode } = useTheme();
 
   const goToProjects = () => {
     setCurrentPage("projects");

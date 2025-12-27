@@ -11,8 +11,8 @@ import * as THREE from 'three'
 function Model() {
   // const gltf1 = useLoader(GLTFLoader, "/models/name.glb");
   // const gltf2 = useLoader(GLTFLoader, "/models/name2.glb");
-  const gltf1 = useGLTF('/models/name-dark.glb') as unknown as { scene: THREE.Group }
-  const gltf2 = useGLTF('/models/name-light.glb') as unknown as { scene: THREE.Group }
+  const gltf1 = useGLTF('/models/name.glb') as unknown as { scene: THREE.Group }
+  const gltf2 = useGLTF('/models/name2.glb') as unknown as { scene: THREE.Group }
   const {darkMode} = useTheme();
 
   const [scale, setScale] = useState<[number, number, number]>([15, 15, 15]); // default (desktop)
